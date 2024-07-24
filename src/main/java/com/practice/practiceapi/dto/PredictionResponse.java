@@ -1,16 +1,27 @@
 package com.practice.practiceapi.dto;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PredictionResponse {
-    private List<Double> prediction;
+    @JsonProperty("message")
+    private String message;
 
-    // Getter and Setter
-    public List<Double> getPrediction() {
+    @JsonProperty("prediction")
+    private Prediction prediction;
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Prediction getPrediction() {
         return prediction;
     }
 
-    public void setPrediction(List<Double> prediction) {
+    public void setPrediction(Prediction prediction) {
         this.prediction = prediction;
     }
 }

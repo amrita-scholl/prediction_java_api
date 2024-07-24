@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.practice.practiceapi.dto.PredictionRequest;
 import com.practice.practiceapi.dto.PredictionResponse;
 import com.practice.practiceapi.entity.PredictionEntity;
@@ -34,17 +35,37 @@ public class PredictionService {
                 request.getBHK()
         };
 
+        String prediction_value = "";
         Map<String, Object> requestBody = new HashMap<>();
         requestBody.put("values", values);
 
         String url = "http://localhost:5000/predict"; // URL of your Flask API
-        PredictionResponse predictionResponse = restTemplate.postForObject(url, requestBody, PredictionResponse.class);
+        String jsonString = restTemplate.postForObject(url, requestBody, String.class);
 
-        if (predictionResponse != null) {
-            return String.valueOf(predictionResponse.getPrediction().get(0));
-        } else {
-            throw new RuntimeException("Failed to get prediction from model");
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            PredictionResponse predictionResponse = objectMapper.readValue(jsonString, PredictionResponse.class);
+
+            System.out.println("Message: " + predictionResponse.getMessage());
+            System.out.println("Prediction ID: " + predictionResponse.getPrediction().getId());
+            System.out.println("Prediction Labels: " + predictionResponse.getPrediction().getLabels());
+            System.out
+                    .println("Prediction Value: " + predictionResponse.getPrediction().getProperties().getPrediction());
+
+            prediction_value = String.valueOf(predictionResponse.getPrediction().getProperties().getPrediction());
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        // if (predictionResponse != null) {
+        // return
+        // String.valueOf(predictionResponse.getPrediction().getProperties().getPrediction());
+        // } else {
+        // throw new RuntimeException("Failed to get prediction from model");
+        // }
+
+        return prediction_value;
     }
 
     public PredictionEntity savePrediction(PredictionRequest request, Double prediction) {
