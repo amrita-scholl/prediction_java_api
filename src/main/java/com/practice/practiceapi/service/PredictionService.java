@@ -5,17 +5,13 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.client.RestTemplate;
 
 import com.practice.practiceapi.dto.PredictionRequest;
 import com.practice.practiceapi.dto.PredictionResponse;
-import com.practice.practiceapi.entity.Neo4jPrediction;
 import com.practice.practiceapi.entity.PredictionEntity;
-import com.practice.practiceapi.repo.Neo4jPredictionRepository;
 import com.practice.practiceapi.repo.PredictionRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -27,12 +23,6 @@ public class PredictionService {
 
     @Autowired
     private PredictionRepository predictionRepository;
-
-    @Autowired
-    private TransactionTemplate transactionTemplate;
-
-    @Autowired
-    private Neo4jPredictionRepository neo4jPredictionRepository;
 
     public String getPredictionFromModel(PredictionRequest request) {
 
@@ -68,28 +58,4 @@ public class PredictionService {
         predictionRepository.save(entity);
         return entity;
     }
-
-    @Transactional
-    public void savePredictionToNeo4j(PredictionEntity entity) {
-        log.info("request >> {} ", entity.getLocation());
-        log.info("request >> {} ", entity.getTotalSqft());
-        log.info("request >> {} ", entity.getBath());
-        log.info("request >> {} ", entity.getBHK());
-
-        log.info("response >> {} ", entity.getPredictedPrice());
-
-        Neo4jPrediction neo4jPrediction = new Neo4jPrediction();
-        neo4jPrediction.setLocation(entity.getLocation());
-        neo4jPrediction.setTotalSqft(entity.getTotalSqft());
-        neo4jPrediction.setBath(entity.getBath());
-        neo4jPrediction.setBHK(entity.getBHK());
-        neo4jPrediction.setPrediction(entity.getPredictedPrice());
-        try {
-            neo4jPredictionRepository.save(neo4jPrediction);
-
-        } catch (Exception ex) {
-            System.out.println("What is the Exception here !!!" + ex);
-        }
-    }
-
 }

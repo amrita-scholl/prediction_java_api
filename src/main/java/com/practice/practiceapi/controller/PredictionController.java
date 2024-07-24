@@ -11,11 +11,8 @@ import com.practice.practiceapi.dto.PredictionRequest;
 import com.practice.practiceapi.entity.PredictionEntity;
 import com.practice.practiceapi.service.PredictionService;
 
-import lombok.extern.slf4j.Slf4j;
-
 @RestController
 @RequestMapping("/api/predict")
-@Slf4j
 public class PredictionController {
 
     @Autowired
@@ -35,13 +32,6 @@ public class PredictionController {
 
         } catch (Exception ex) {
             System.out.println("Exception !!!!" + ex);
-        }
-        try {
-
-            predictionService.savePredictionToNeo4j(entity);
-
-        } catch (Exception ex) {
-            System.out.println("What Exception is coming here !!!" + ex);
         }
         return ResponseEntity.ok(prediction);
     }
